@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Form for Automation Testing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demo Form</h1>
+    <p>Fill out this form for Playwright automation testing</p>
+    
+    <form id="demoForm">
+        <div class="form-group">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" data-testid="name-input">
+            <div class="error" id="fullNameError">Please enter your full name</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" data-testid="email-input">
+            <div class="error" id="emailError">Please enter a valid email address</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" data-testid="phone-input">
+            <div class="error" id="phoneError">Please enter a valid phone number</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" min="18" max="120" data-testid="age-input">
+            <div class="error" id="ageError">Please enter a valid age (18-120)</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" data-testid="gender-select">
+                <option value="">-- Select Gender --</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="prefer-not-to-say">Prefer not to say</option>
+            </select>
+            <div class="error" id="genderError">Please select a gender</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="4" data-testid="message-textarea"></textarea>
+            <div class="error" id="messageError">Please enter a message</div>
+        </div>
+        
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="terms" name="terms" data-testid="terms-checkbox">
+                I agree to the terms and conditions
+            </label>
+            <div class="error" id="termsError">You must agree to the terms and conditions</div>
+        </div>
+        
+        <button type="submit" id="submitBtn" data-testid="submit-button">Submit Form</button>
+    </form>
+    
+    <div class="results" id="formResults" data-testid="results-container">
+        <h2>Form Submission Results</h2>
+        <div id="resultContent"></div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('demoForm');
+            const resultsDiv = document.getElementById('formResults');
+            const resultContent = document.getElementById('resultContent');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Reset errors
+                const errorElements = document.querySelectorAll('.error');
+                errorElements.forEach(el => el.style.display = 'none');
+                
+                // Validate form
+                let isValid = true;
+                
+                const fullName = document.getElementById('fullName').value.trim();
+                if (!fullName) {
+                    document.getElementById('fullNameError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                const email = document.getElementById('email').value.trim();
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email || !emailPattern.test(email)) {
+                    document.getElementById('emailError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                const phone = document.getElementById('phone').value.trim();
+                if (!phone) {
+                    document.getElementById('phoneError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                const age = document.getElementById('age').value;
+                if (!age || age < 18 || age > 120) {
+                    document.getElementById('ageError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                const gender = document.getElementById('gender').value;
+                if (!gender) {
+                    document.getElementById('genderError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                const message = document.getElementById('message').value.trim();
+                if (!message) {
+                    document.getElementById('messageError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                const terms = document.getElementById('terms').checked;
+                if (!terms) {
+                    document.getElementById('termsError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // If valid, show results
+                if (isValid) {
+                    // Gather all form data
+                    const formData = {
+                        fullName,
+                        email,
+                        phone,
+                        age,
+                        gender,
+                        message,
+                        terms
+                    };
+                    
+                    // Display results
+                    let resultHTML = '<ul>';
+                    for (const [key, value] of Object.entries(formData)) {
+                        resultHTML += `<li><strong>${key}:</strong> ${value}</li>`;
+                    }
+                    resultHTML += '</ul>';
+                    
+                    resultContent.innerHTML = resultHTML;
+                    resultsDiv.style.display = 'block';
+                    
+                    // Auto-scroll to results
+                    resultsDiv.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
